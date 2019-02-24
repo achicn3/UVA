@@ -1,0 +1,49 @@
+#include <iostream>
+#include <string>
+#include <utility>
+#include <map>
+using namespace std;
+
+typedef pair<int,int> tbound; //lower bound and upper bound
+typedef struct m{	//用來放置使用者輸入的結構 
+	int base;		//題目給的基底 base 
+	int size;		//一個元素的大小 
+	int D;			//有多少個dimension
+	tbound *bound;	//儲存bound 幾個dimension 就有幾個bound
+	int *C;
+}data;
+int main(){
+	int n,r;
+	map<string,data> dmap;							// [陣列名字] map to [struct data] 的 map 
+	while(cin>>n>>r){
+		for(int i=0;i<n;i++){
+			string tmpstr;							//用來暫存input的陣列名字 
+			data tmpdata;							//用來暫存base、element size等的結構 
+			cin>>tmpstr>>tmpdata.base>>tmpdata.size>>tmpdata.D;
+			tmpdata.bound = new tbound[tmpdata.D];	//D有多大 就有多少對上、下界 
+			tmpdata.C = new int[tmpdata.D]; 		//題目中的Ci ， Dimension有多大(Dimension大小為D)  C就從0~D 
+			tmpdata.C[tmpdata.D-1] = tmpdata.size;	//C的最後一個元素的值為element size(題目要求) 
+			for(int j=0;j<tmpdata.D;j++)cin>>tmpdata.bound[j].first>>tmpdata.bound[j].second;			//輸入下界、上界 
+			for(int j=tmpdata.D-2;j>=0;j--){		//從倒數第二個C開始往前算 
+				tmpdata.C[j] = tmpdata.C[j+1]*(tmpdata.bound[j+1].second-tmpdata.bound[j+1].first +1);	//計算Ci 
+			}
+			dmap.insert(decltype(dmap)::value_type(tmpstr,tmpdata));//放入map中 
+		}
+		for(int i=0;i<r;i++){
+			string tmpstr;						//暫存使用者輸入陣列名字的變數，用來要取得map的哪個key  
+			cin>>tmpstr;						 
+			data &get_data = dmap[tmpstr];		//從map取出 
+			int tmp;							//用來儲存使用者輸入要陣列的哪個位置 
+			int sum = get_data.base;			//總和 
+			cout<<tmpstr<<"[";
+			for(int j=0;j<get_data.D;j++){               
+				cin>>tmp;
+				cout<<tmp;
+				if(j!=get_data.D-1)cout<<", ";
+				else cout<<"] = ";
+				sum+=get_data.C[j]*(tmp-get_data.bound[j].first);	//照公式計算 
+			}
+			cout<<sum<<endl;					//輸出結果 
+		}
+	}
+}
