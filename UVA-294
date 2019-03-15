@@ -1,0 +1,125 @@
+#include <iostream>
+#include <cmath>
+#define prime_range (int)floor(sqrt(1000000000))	//prime_range = 31622
+using namespace std;
+
+int prime[prime_range+1];	//This array store all the prime numbers (2,3,5,7,11....)
+
+/********
+ *
+ * Boolean array(sieve) is used in getPrime() function ,
+ * getPrime() is a function that using sieve method.
+ * We first set sieve[0] = sieve[1] = true ,because neither 0 nor 1 is prime.
+ * So i start from 2 to prime_range (31622),
+ * if i is a prime number,then i's multiplication is definitely not a prime (sieve method).
+ * Reference about sieve method  : https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+ * and we record how many prime number over here. 
+ * In this case there have 3402 prime number (cout<<num_of_prime),and we store them in prime[] array.
+ * 
+ ********/
+bool sieve[prime_range+1]{ true, true }; 
+
+int getPrime(){
+
+	/*----Sieve method-----*/
+
+    for(int i=2;i<=prime_range;i++){
+
+    	//If i is a prime
+    	if(!sieve[i]){
+    		
+    		//Then i's multiplication is not prime
+    		for(int k=2*i;k<prime_range;k+=i){
+    			
+    			//If a number k is not a prime ,set sieve[k] = 1 
+    			sieve[k] = 1;
+    	
+    		}
+    	
+    	}
+    
+    }
+    //This variable store how many prime numbers
+    int count=0;
+    
+    for(int i=0;i<=prime_range;i++){
+    	//If i is a prime ,then sieve[i] = false
+    	if(!sieve[i]){	
+    		
+    		//Store all the prime number into prime[] array,and record how many prime number 
+    		prime[count++] = i;
+   
+    	}
+    
+    }
+    /******
+     *
+     * Return how many prime number in the range 0 ~ 10^9,in this case we return count
+     * The reason we return count is prime_range definitely bigger than count
+     * We don't need calculate from prime[0]~prime[prime_range] ,we just need in prime[0]~prime[count] 
+     *
+    ********/
+    return count;
+}
+
+/******
+ *
+ * @Paramater 
+ *		int num : The number we want to do the prime factorization
+ *		int num_of_prime : From above function , this value equivalent variable count in getPrime() 
+ * 
+ * This function do prime factorization
+ * Why we do prime factorization?
+ * For example ,100, it's factors have 100,50,25,20,10,5,4,2,1 
+ * it's prime factorizaiotn is 5^2 * 2^2 
+ * If we do (2+1) * (2+1)  = 9, is equivalent the number of the factors of 100,
+ * We can do that because 5^0 5^1 5^2 2^0 2^1 2^2 have 3*3 combination
+ * All of this combination is must one of factors. 
+ * 
+ *
+********/
+int divisor(int num,int num_of_prime){
+	int factor_num = 1;
+
+	int temp_num = num;
+
+	for(int i=0;i<num_of_prime;i++){
+
+		int temp_factor_num =0;
+
+		//Prime factorization
+		while(!(temp_num % prime[i]) ){
+
+			temp_num /= prime[i];
+
+			temp_factor_num++;
+
+		}
+		//Calculate num has how many factors
+		factor_num *= temp_factor_num+1;
+
+	}
+
+	return factor_num;
+
+}
+
+int main(){
+	int num_of_prime = getPrime();
+	int maxFactor=0 ,maxNum=0 ,L ,U ,times;
+	int temp;
+	while(cin>>times){
+		while(times--){
+			cin>>L>>U;
+			for(int i=L;i<=U;i++){
+				temp = divisor(i,num_of_prime);
+				if(temp>maxFactor){
+					maxFactor = temp;
+					maxNum = i;
+				}
+			}
+			cout<<"Between "<<L<<" and "<<U<<", "<<maxNum<<" has a maximum of "<<maxFactor<<" divisors."<<endl;
+			maxNum = maxFactor = 0 ;
+		}
+	}  
+}
