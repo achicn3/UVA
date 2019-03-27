@@ -1,0 +1,36 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main(){
+	int a,b;
+	while(cin>>a>>b){
+		if(a==0 && b==0)break;
+		else{
+			vector<int> one;
+			vector<int> two;
+			int num;
+			int used1[200000]={0};
+			int used2[200000]={0};
+			int count=0;
+			for(int i=0;i<a;i++){
+				cin>>num;
+				if(!used1[num])one.push_back(num);
+				used1[num] = 1;
+			}
+			for(int i=0;i<b;i++){
+				cin>>num;
+				if(used1[num] && !used2[num])count++;
+				if(!used1[num] && !used2[num])two.push_back(num);
+				used2[num] = 1;
+			}
+			if(one.size() == 1 && two.size()==1 && one[0] == two[0]){
+				cout<<"0"<<endl;
+				continue;
+			}
+			if(one.size() - count < two.size())cout<<one.size() - count<<endl;
+			else cout<<two.size()<<endl;
+		}
+	}
+}
